@@ -36,10 +36,10 @@ IF(CMAKE_BUILD_TYPE_UPPER MATCHES DEBUG)
     SET(BUILD_SHARED_LIBS OFF)
 ENDIF()
 
-IF(${CMAKE_BUILD_TYPE_UPPER} STREQUAL "COVERAGE")
-    MESSAGE(STATUS "Adding coverage")
-    FIND_PACKAGE(codecov)
-ENDIF()
+#IF(${CMAKE_BUILD_TYPE_UPPER} STREQUAL "COVERAGE")
+#    MESSAGE(STATUS "Adding coverage")
+#    FIND_PACKAGE(codecov)
+#ENDIF()
 
 IF(DEFINED INSTALL_PREFIX)
     SET(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX})
@@ -90,11 +90,11 @@ TARGET_LINK_LIBRARIES(Post_processing ${FFTW_LIBRARIES})
 ADD_EXECUTABLE(check_W_DYue ${srcCheck_W_DYue})
 TARGET_LINK_LIBRARIES(check_W_DYue lapack blas ${FFTW_LIBRARIES})
 
-IF(${CMAKE_BUILD_TYPE_UPPER} STREQUAL "COVERAGE")
-    add_coverage(HOS_ocean)
-    # add_coverage(Post_processing)
-    # add_coverage(check_W_DYue)
-ENDIF()
+#IF(${CMAKE_BUILD_TYPE_UPPER} STREQUAL "COVERAGE")
+#    add_coverage(HOS_ocean)
+#    # add_coverage(Post_processing)
+#    # add_coverage(check_W_DYue)
+#ENDIF()
 
 INSTALL(TARGETS HOS_ocean Post_processing check_W_DYue
         RUNTIME DESTINATION ${RUNTIME_OUTPUT_DIRECTORY}

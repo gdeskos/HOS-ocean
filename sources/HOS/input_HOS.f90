@@ -70,11 +70,10 @@ INTEGER  :: unit,unit2,n1_tmp,n2_tmp,M_tmp,p1_tmp,p2_tmp
 unit  = 100
 unit2 = 101
 OPEN(unit, FILE=filename)
-OPEN(unit2, FILE='Results/restart_data.dat')
 line_counter = 0
 !
 CALL read_datum(unit, i_restart)       ! Restart previous computation
-IF (i_restart.EQ.0) THEN ! Classical simulation without restart file
+if  (i_restart.EQ.0) THEN ! Classical simulation without restart file
     CALL read_datum(unit, i_case)          ! Choice of computed case
     CALL read_blank_line(unit)
     WRITE(*,*)
@@ -116,6 +115,7 @@ IF (i_restart.EQ.0) THEN ! Classical simulation without restart file
     time_restart = 0.0_rp
 ELSEIF (i_restart.EQ.1) THEN ! Use results from previous simulations
     !
+    OPEN(unit2, FILE='Results/restart_data.dat')
     ! Load the parameters of the previous computation for possible restart
     READ(unit2,102) n1_tmp,n2_tmp,M_tmp,p1_tmp,p2_tmp, &
         i_case,n,random_phases,tecplot,i_out_dim,i_3d,i_a_3d,i_2d,i_prob,i_sw, &

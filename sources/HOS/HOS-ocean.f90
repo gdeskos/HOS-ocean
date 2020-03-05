@@ -59,8 +59,31 @@ TYPE(RK_parameters)        :: RK_param
 ! H2 operator
 REAL(RP) :: error_H2
 !
+integer :: ierr
+
+integer :: nargin, FNLength, status, DecInd
+logical :: back
+character(len=80) :: InputFN, FNBase
+
+! Handle input file like a boss -- GD
+nargin=command_argument_count()
+if (nargin <1) then
+   InputFN='input_HOS.dat'
+   print*, 'HOS-ocean is run with the default file -->', InputFN
+elseif (nargin.ge.1) then
+   print*, 'HOS-ocean is run with the provided file -->', InputFN
+   call get_command_argument(1,InputFN,FNLength,status)
+   back=.true.
+   FNBase=inputFN((index(InputFN,'/',back)+1):len(InputFN))
+   DecInd=index(FNBase,'.',back)
+   if (DecInd >1) then
+      FNBase=FNBase(1:(DecInd-1))
+   end if
+endif
+
 ! Input file
-CALL read_input('input_HOS.dat')
+
+CALL read_input(InputFN)
 !
 CALL initiate_parameters()
 !
@@ -520,11 +543,13 @@ DO WHILE (T_stop_star-time_cur >= -tiny)
         PRINT*,'Hs_out=',4.0_rp*SQRT(energy(3)/g_star) * L_out,', T_peak=',Tp * T_out
     ENDIF
     PRINT*,'*****************',NINT(time_cur/T_stop_star*100),' % *****************'
+    
+    i_out_step=NINT(time_cur/output_time)
+
     CALL output_time_step(i_3d=i_3d, i_a=i_a_3d, i_vol=1, i_2D=i_2d, i_max=0, &
                          time=time_cur, N_stop=NINT(T_stop_star / dt_out), &
                          a_eta=a_eta, a_phis=a_phis, da_eta= da_eta, volume=volume, energy=energy, E_0=E_o, E_tot=E_tot, &
                          i_prob=i_prob, dt=dt, n_er_tot=n_er_tot, n_rk_tot=n_rk_tot)
-    !
     IF (ABS(time_cur-T_stop_star) <= tiny) EXIT ! output of the last zone is done
     !
     ! Going to next time step

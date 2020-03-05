@@ -30,7 +30,7 @@ USE ramp
 IMPLICIT NONE
 !
 ! Number of modes
-INTEGER, PARAMETER :: n1 = 256
+INTEGER, PARAMETER :: n1 = 64 
 INTEGER, PARAMETER :: n2 = 64
 ! Array size
 INTEGER, PARAMETER :: m1 = n1
@@ -141,6 +141,9 @@ REAL(RP) :: E_cible,gamma,beta,Ta,Tp_real,Hs_real,Tp
 !
 REAL(RP), DIMENSION(md1o2p1,n2)  :: omega_n2,goomega_n2
 REAL(RP), DIMENSION(n2)          :: ky_n2
+
+REAL(RP) :: output_time
+INTEGER  :: i_out_step
 !
 ! GD: add for velocities
 ! FIXME: just create if output needed?

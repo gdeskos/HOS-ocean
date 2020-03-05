@@ -31,11 +31,7 @@ USE velocities
 !
 IMPLICIT NONE
 !
-!
-!
 CONTAINS
-!
-!
 !
 SUBROUTINE init_output(i_3d, i_a, i_vol, i_2D, i_max, i_prob, i_sw)
 !
@@ -47,7 +43,7 @@ INTEGER, INTENT(IN) :: i_3d, i_a, i_vol, i_2D, i_max, i_prob, i_sw
 INTEGER :: i1, i2
 !
 IF (i_3D == 1) THEN
-    OPEN(1,file='Results/3d.dat',status='unknown')
+    OPEN(1,file='Results/3d.dat')
     CALL write_input(1)
     WRITE(1,'(A)')'TITLE=" 3D free surface elevation "'
     WRITE(1,'(A)') 'VARIABLES="x","y","eta","phis"'
@@ -202,34 +198,24 @@ IF (i_3D == 1) THEN
         envelope(1:n1,1:n2) = 0.0_rp
     ENDIF
     !
+    OPEN(21,file='Results/3d_'//trim(int2str(NINT(time/dt)))//'.dat',status='unknown')
     ! Output of the free surface elevation versus space (size control of the output file)
-    IF (ABS(time-time_restart) <= tiny) THEN
-        IF (tecplot == 11) THEN
-            WRITE(1,103)'ZONE SOLUTIONTIME = ',time*T_out,', I=',n1,', J=',n2
-        ELSE
-            WRITE(1,103)'ZONE T = "',time*T_out,'", I=',n1,', J=',n2
-        ENDIF
-        DO i2 = 1, n2
-            DO i1 = 1, n1
-                WRITE(1,102) x(i1)*L_out, y(i2)*L_out, &
-                eta(i1,i2)*eta_mult*L_out, phis(i1,i2)*eta_mult*L_out**2/T_out
-            ENDDO
+    WRITE(21,'(A)')'TITLE=" 3D free surface elevation "'
+    WRITE(21,'(A)')'VARIABLES="x","y","eta","phis"'
+    WRITE(21,106)  'ZONE I=', n1, ', J = ', n2, ', F=POINT'
+    print *, L_out
+    DO i2 = 1, n2
+        DO i1 = 1, n1
+            WRITE(21,102) x(i1)*L_out, y(i2)*L_out, &
+            eta(i1,i2)*eta_mult*L_out, phis(i1,i2)*eta_mult*L_out**2/T_out
         ENDDO
-    ELSE
-        IF (tecplot == 11) THEN
-            WRITE(1,103)'ZONE SOLUTIONTIME = ',time*T_out,', D=(1,2), I=',n1,', J=',n2
-        ELSE
-            WRITE(1,103)'ZONE T = "',time*T_out,'", D=(1,2), I=',n1,', J=',n2
-        ENDIF
-        DO i2 = 1, n2
-            DO i1 = 1, n1
-            WRITE(1,104) eta(i1,i2)*eta_mult*L_out, phis(i1,i2)*eta_mult*L_out**2/T_out
-            ENDDO
-        ENDDO
-    ENDIF
+    ENDDO
+    close(21)
    102 FORMAT(3(ES12.5,X),ES12.5)
    103 FORMAT(A,ES12.5,A,I5,A,I5)
    104 FORMAT((ES12.5,X),ES12.5)
+   105 FORMAT(A,(ES12.5,X))
+   106 FORMAT(A,I5,A,I5)
 ENDIF
 !
 IF (i_2D == 1) THEN
@@ -307,7 +293,7 @@ IF (i_a == 1) THEN
         IF (tecplot == 11) THEN
             WRITE(2,103)'ZONE SOLUTIONTIME = ',time*T_out,', D=(1,2), I=',n1o2p1,', J=',n2
         ELSE
-            WRITE(2,103)'ZONE T = "',time*T_out,'", D=(1,2), I=',n1o2p1,', J=',n2
+            WRITE(2,103)'ZONE T = "',time*T_out,'", I=',n1o2p1,', J=',n2
         ENDIF
         DO i2 =  n2o2p1+1, n2
             DO i1 = 1, n1o2p1
@@ -423,8 +409,6 @@ CLOSE(234)
 !
 END SUBROUTINE output_time_step
 !
-!
-!
 FUNCTION hilbert(x)
 !
 IMPLICIT NONE
@@ -439,8 +423,6 @@ CALL fourier_2_space(temp_C_n, temp_R_n)
 hilbert = temp_R_n
 !
 END FUNCTION hilbert
-!
-!
 !
 SUBROUTINE init_restart(i_3d, i_a, i_vol, i_2D, i_max, i_prob, i_sw, time_cur, dt, n_er_tot, n_rk_tot)
 !
@@ -594,7 +576,5 @@ CLOSE(234)
 404 FORMAT(3(D25.16,X),D25.16)
 !
 END SUBROUTINE init_restart
-!
-!
 !
 END MODULE output

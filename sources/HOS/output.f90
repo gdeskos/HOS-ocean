@@ -200,9 +200,10 @@ IF (i_3D == 1) THEN
     !
     OPEN(21,file='Results/3d_'//trim(int2str(NINT(time/dt)))//'.dat',status='unknown')
     ! Output of the free surface elevation versus space (size control of the output file)
-    WRITE(21,'(A)')'TITLE=" 3D free surface elevation "'
-    WRITE(21,'(A)')'VARIABLES="x","y","eta","phis"'
-    WRITE(21,106)  'ZONE I=', n1, ', J = ', n2, ', F=POINT'
+    !WRITE(21,'(A)')'TITLE=" 3D free surface elevation "'
+    !WRITE(21,'(A)')'VARIABLES="x","y","eta","phis"'
+    !WRITE(21,106)  'ZONE I=', n1, ', J = ', n2, ', F=POINT'
+    WRITE(21,*) time
     print *, L_out
     DO i2 = 1, n2
         DO i1 = 1, n1

@@ -32,6 +32,7 @@ IMPLICIT NONE
 ! Number of modes
 INTEGER, PARAMETER :: n1 = 64 
 INTEGER, PARAMETER :: n2 = 64
+
 ! Array size
 INTEGER, PARAMETER :: m1 = n1
 INTEGER, PARAMETER :: m2 = n2

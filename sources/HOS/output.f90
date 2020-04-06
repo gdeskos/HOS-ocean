@@ -177,10 +177,11 @@ COMPLEX(CP), DIMENSION(m1o2p1,m2) :: a_eta, a_phis, da_eta
 REAL(RP), DIMENSION(m1,m2)        :: eta, phis
 REAL(RP)                          :: time, volume, energy(3), E_0(3), E_tot, dt
 ! Local variables
-INTEGER                        :: ii, i1, i2, it, n_lambda_x
+INTEGER                        :: ii, i1, i2, i3, it, n_lambda_x 
 REAL(RP)                       :: a_1, eta_mult, min_val, max_val
 REAL(RP), DIMENSION(m1,m2)     :: envelope
 REAL(RP), DIMENSION(m1o2p1,m2) :: abs_eta, log_eta,abs_phis,log_phis
+REAL(RP)                       :: Lz,dz
 !
 eta_mult = eta_out
 IF (i_3D == 1) THEN
@@ -200,19 +201,26 @@ IF (i_3D == 1) THEN
     !
     OPEN(21,file='Results/3d_'//trim(int2str(NINT(time/dt)))//'.dat',status='unknown')
     ! Output of the free surface elevation versus space (size control of the output file)
-    !WRITE(21,'(A)')'TITLE=" 3D free surface elevation "'
-    !WRITE(21,'(A)')'VARIABLES="x","y","eta","phis"'
-    !WRITE(21,106)  'ZONE I=', n1, ', J = ', n2, ', F=POINT'
-    WRITE(21,*) time
+    IF (tecplot==1) THEN
+        WRITE(21,'(A)')'TITLE=" 3D mesh deformation "'
+        WRITE(21,'(A)')'VARIABLES="x","y","eta","u","v","w"'
+        WRITE(21,106)  'ZONE I=', n1, ', J = ', n2, ', F=POINT'
+    ELSE
+        WRITE(21,*) time 
+    ENDIF
+    
     print *, L_out
     DO i2 = 1, n2
         DO i1 = 1, n1
-            WRITE(21,102) x(i1)*L_out, y(i2)*L_out, &
-            eta(i1,i2)*eta_mult*L_out, phis(i1,i2)*eta_mult*L_out**2/T_out
+        WRITE(21,102) x(i1)*L_out, y(i2)*L_out, &
+        eta(i1,i2)*eta_mult*L_out, (phisx(i1,i2)-etax(i1,i2)*W1(i1,i2))*eta_mult*L_out/T_out, &
+    (phisy(i1,i2)-etay(i1,i2)*W1(i1,i2))*eta_mult*L_out/T_out,&
+        W1(i1,i2)*eta_mult*L_out/T_out
+    !W(i1,i2)*eta_mult*L_out/T_out! phis(i1,i2)*eta_mult*L_out**2/T_out
         ENDDO
     ENDDO
     close(21)
-   102 FORMAT(3(ES12.5,X),ES12.5)
+   102 FORMAT(6(ES12.5,X),ES12.5)
    103 FORMAT(A,ES12.5,A,I5,A,I5)
    104 FORMAT((ES12.5,X),ES12.5)
    105 FORMAT(A,(ES12.5,X))
